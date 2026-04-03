@@ -1,10 +1,23 @@
 [package]
-name = "projet"
-version = "0.1.0"
-edition = "2024"
+name = "duel_game"
+version = "0.2.0"
+edition = "2021"
+authors = ["Amaury LJV"]
+description = "Mini-jeu de duel au tour par tour en Rust — version refactorisée"
+readme = "README.md"
 
 [dependencies]
-clap = { version = "4.6.0", features = ["derive"] }
-env_logger = "0.11.10"
-log = "0.4.29"
+# rand : génération de nombres aléatoires pour les objectifs
 rand = "0.10.0"
+
+# clap : parsing des arguments en ligne de commande
+clap = { version = "=4.6.0", features = ["derive"] }
+
+# log : macros de logging (error!, warn!, info!, debug!, trace!)
+log = "0.4"
+
+# env_logger : backend qui route les logs vers stdout/stderr
+env_logger = "0.11"
+
+# crossterm : entrée clavier sans confirmation ENTER (mode touché direct)
+crossterm = "0.29.0"

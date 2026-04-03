@@ -1,40 +1,136 @@
-# projet_SEC_RUST_2026_jeu_duel
-Développement d’un mini jeu de duel en RUST dans le cadre de la formation SEC
-## Groupe : JD, AL
+# Duel Game 🎮
 
-## Présentation : 
-Ce jeu se joue au tour par tour entre deux joueurs. Il utilise exclusivement la touche ENTREE du clavier ainsi que le terminal en tant 
-qu’ I/O. 
+Mini-jeu de duel au tour par tour en Rust, développé dans le cadre du cours de RUST.
+Le jeu peut se jouer jusqu'à 4 joueurs. Par défaut, au lancement du programme, seul 2 joueurs pourront jouer.
+Pensez à renseigner le pseudonyme des joueurs supplémentaires.
 
-Il oppose deux joueurs disposant de caractéristique propres (nom, vitalité, vitesse, force) susceptibles de changer au cours de la 
-partie. Chacune des caractéristiques communes aux joueurs peuvent-être paramétrées au lancement du programme mais doivent 
-disposer de valeurs par défaut.
+---
 
-A chaque début de tour, un tableau d’objectif est généré et contient des nombres de 0 à 100 générés aléatoirement. Le joueur doit 
-ensuite appuyer sur la touche entrée pour commencer à jouer.
+## Lancement
 
-Un compteur s’incrémentant de 0 à 100 doit alors apparaître. Le compteur est propre au joueur, son pas d’incrémentation (en ms) 
-correspond à son membre “Vitesse” (de 50ms par défaut). Lorsqu’une interruption est détectée par le programme (via l’appui de la 
-touche ENTREE), le compteur se fige, affiche le nombre en cours puis démarre le compteur suivant sur une nouvelle ligne. 
+```bash
+cargo run -- --name1 Amaury --name2 Julien --name3 Joueur3 --name4 Joueur4 --vitality 50 --objectifs 5
+```
 
-L'objectif du joueur est d'arrêter le compteur au plus près des différents nombres du tableau d'objectif. Le tour du joueur se termine 
-lorsqu'une interruption est détectée pour chaque objectif.
+### Paramètres disponibles
 
-## Cahier des charges :
-- Les nombres du tableau d’objectifs doivent être générés aléatoirement entre 0 et 100 à chaque tour de jeu.
-- Le code doit gérer le fait qu'un résultat de 95 pour un objectif de 15 entraine une difference de 20 points et non de 80.
-- Lorsque le compteur arrive à 100, il repasse à 0. Cela incrémente la variable “miss” dont la valeur par défaut est à 0.
-- Les valeurs de “miss” et “compteur” doivent être up toutes les 30ms via un thread d’affichage dédié.
-- A chaque objectif, le joueur gagne des points en fonction de la différence avec son score :
+| Paramètre      | Défaut  | Description                                         |
+|----------------|---------|-----------------------------------------------------|
+| `--name1`      | Amaury  | Nom du joueur 1                                     |
+| `--name2`      | Julien  | Nom du joueur 2                                     |
+| `--name2`      | None    | Nom du joueur 3 (Pas de joueur par défaut)          |
+| `--name2`      | None    | Nom du joueur 4 (Pas de joueur par défaut)          |
+| `--vitality`   | 50      | Points de vie initiaux (communs aux deux joueurs)   |
+| `--objectifs`  | 5       | Nombre d'objectifs par tour                         |
+| `--speed`      | 50      | Délai en ms entre chaque tick du compteur (min : 5) |
+| `--strength`   | 50      | Bonus de force ajouté au score brut                 |
 
-| Différence (absolue) | 0 | 1 à 5 | 6 à 10 | 11 à 20 | 21 à 40 | > 40 |
-|----------------------|---|-------|--------|---------|---------|------|
-| Score                | (100 + force) / (miss + 1) | (80 + force) / (miss + 1) | (60 + force) / (miss + 1) | (40 + force) / (miss + 1) | (20 + force) / (miss + 1) | (0 + force) / (miss + 1) |
+---
 
-- Le score final de fin de tour correspond à la moyenne des points sur chacun des objectifs.
-- Le score final de fin de tour doit être arrondi à l’entier supérieur.
-- A la fin d’une manche :-Le joueur avec le plus de point gagne.-Le perdant perd en vitalité la différence entre les deux scores.-Le gagnant choisi un poison à appliquer au joueur qui impactera ses caractéristiques pour les prochaines 
-manches (-5 de Vitesse OU -5 de Force).
-- Les caractéristique d’un joueur doivent être affichées au début de son tour de jeu.
-- La partie se termine lorsque la vitalité d’un joueur tombe à zéro.
-- Les joueurs doivent pouvoir relancer une partie en fin de jeu.
+## Règles du jeu
+
+Le jeu oppose de deux jusqu'à quatre joueurs qui s'affrontent en **manches successives**.  
+Chaque joueur dispose de quatre caractéristiques : **nom**, **vitalité**, **vitesse** et **force**.
+Au lancement du jeu, les joueurs peuvent décider de jouer en mode **Normale** ou en mode **Aléatoire**.
+En mode normal, la touche **ENTRÉE** est la seule touche éligible pour figer son score.
+En mode aléatoire, une lettre de l'alphabet est choisi aléatoirement pour chaque objectif, elle devient ainsi la touche sur laquelle appuyée pour l'objectif correspondant.
+
+### Déroulement d'un tour
+
+1. Un tableau de N objectifs (nombres entre 0 et 100) est généré aléatoirement.
+2. Le joueur appuie sur **ENTRÉE** pour démarrer.
+3. Un compteur s'incrémente de 0 à 100 à la vitesse du joueur (en ms par tick).
+
+#### Mode normal
+4. Le joueur appuie sur **ENTRÉE** pour figer le compteur sur chaque objectif.
+
+#### Mode aléatoire
+4. Le joueur appuie sur **la touche objectif** pour figer le compteur sur chaque objectif.
+
+5. Plus le compteur est proche de l'objectif, plus le score est élevé.
+
+### Calcul du score
+
+Le score de chaque objectif suit cette grille de précision :
+
+| Différence (absolue) | Score de base |
+|----------------------|---------------|
+| 0                    | 100           |
+| 1 – 5                | 80            |
+| 6 – 10               | 60            |
+| 11 – 20              | 40            |
+| 21 – 40              | 20            |
+| > 40                 | 0             |
+
+**Formule :** `(score_base + force) / (miss + 1)`
+
+> La variable `miss` s'incrémente à chaque fois que le compteur boucle sur 0.  
+> La différence est **circulaire** : un compteur à 95 pour un objectif à 15 donne une différence de 20, pas 80.
+
+Le score de fin de tour est la **moyenne arrondie à l'entier supérieur** des scores de chaque objectif.
+
+### Résolution d'une manche
+
+- Le joueur avec le score le plus élevé **gagne la manche**.
+- Le perdant perd en vitalité la **différence entre les deux scores**.
+- Le gagnant choisit un **poison** à appliquer au perdant :
+  - `1` → −5 de vitesse (compteur plus rapide, plancher : 5 ms)
+  - `2` → −5 de force (plancher : 0)
+
+La partie s'arrête quand la **vitalité d'un joueur tombe à zéro ou en dessous**.  
+Les joueurs peuvent **relancer une partie** sans relancer le programme.
+
+---
+
+## Exemple de partie
+
+```
+##### Démarrage de la partie #####
+Joueurs : Amaury vs Julien
+Vitalité initiale : 50 | Objectifs par tour : 5
+
+## Manche 1 ##
+Au tour de Amaury (Vitality=50, Speed=50, Strength=50)
+→ Objectifs : [50, 82, 74, 33, 95]
+→ Appuyer sur ENTREE pour démarrer le tour..
+→ Objectif  50 : Miss = 1 | Compteur =  36 // Score = (40 + 50) / 2 = 45
+→ Objectif  82 : Miss = 0 | Compteur =  80 // Score = (80 + 50) / 1 = 130
+→ Objectif  74 : Miss = 0 | Compteur =  70 // Score = (80 + 50) / 1 = 130
+→ Objectif  33 : Miss = 1 | Compteur =  43 // Score = (60 + 50) / 2 = 55
+→ Objectif  95 : Miss = 1 | Compteur =  90 // Score = (80 + 50) / 2 = 65
+# Fin du tour #
+→ Score moyen : 85
+```
+
+---
+
+## Architecture
+
+| Module        | Rôle                                                       |
+|---------------|------------------------------------------------------------|
+| `args`        | Parsing des arguments CLI via `clap`                       |
+| `player`      | Struct `Player` et ses caractéristiques                    |
+| `mechanics`   | Logique pure : diff circulaire, score, génération objets   |
+| `counter`     | Compteur temps-réel (threads + atomics)                    |
+| `input`       | Lecture stdin (ENTRÉE, choix 1/2)                          |
+| `round`       | Orchestration d'un tour, d'une manche, du poison           |
+
+---
+
+## Documentation
+
+```bash
+cargo doc --open
+```
+
+## Tests
+
+```bash
+cargo test
+```
+
+## Logs (debug)
+
+```bash
+RUST_LOG=debug cargo run
+```
