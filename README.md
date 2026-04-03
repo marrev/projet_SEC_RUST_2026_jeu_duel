@@ -18,8 +18,8 @@ cargo run -- --name1 Amaury --name2 Julien --name3 Joueur3 --name4 Joueur4 --vit
 |----------------|---------|-----------------------------------------------------|
 | `--name1`      | Amaury  | Nom du joueur 1                                     |
 | `--name2`      | Julien  | Nom du joueur 2                                     |
-| `--name2`      | None    | Nom du joueur 3 (Pas de joueur par défaut)          |
-| `--name2`      | None    | Nom du joueur 4 (Pas de joueur par défaut)          |
+| `--name3`      | None    | Nom du joueur 3 (Pas de joueur par défaut)          |
+| `--name4`      | None    | Nom du joueur 4 (Pas de joueur par défaut)          |
 | `--vitality`   | 50      | Points de vie initiaux (communs aux deux joueurs)   |
 | `--objectifs`  | 5       | Nombre d'objectifs par tour                         |
 | `--speed`      | 50      | Délai en ms entre chaque tick du compteur (min : 5) |
@@ -29,11 +29,11 @@ cargo run -- --name1 Amaury --name2 Julien --name3 Joueur3 --name4 Joueur4 --vit
 
 ## Règles du jeu
 
-Le jeu oppose de deux jusqu'à quatre joueurs qui s'affrontent en **manches successives**.  
+Le jeu oppose deux jusqu'à quatre joueurs qui s'affrontent en **manches successives**.  
 Chaque joueur dispose de quatre caractéristiques : **nom**, **vitalité**, **vitesse** et **force**.
 Au lancement du jeu, les joueurs peuvent décider de jouer en mode **Normale** ou en mode **Aléatoire**.
 En mode normal, la touche **ENTRÉE** est la seule touche éligible pour figer son score.
-En mode aléatoire, une lettre de l'alphabet est choisi aléatoirement pour chaque objectif, elle devient ainsi la touche sur laquelle appuyée pour l'objectif correspondant.
+En mode aléatoire, une lettre de l'alphabet est choisie aléatoirement pour chaque objectif, elle devient ainsi la touche sur laquelle appuyer pour l'objectif correspondant.
 
 ### Déroulement d'un tour
 
